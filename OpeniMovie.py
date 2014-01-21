@@ -143,6 +143,7 @@ class ProgressBar(tk.Tk):
     def periodiccall(self):
 
         self.checkqueue()
+
         if self.thread.is_alive():
             self.after(800, self.periodiccall)
         else:
@@ -158,15 +159,17 @@ class ProgressBar(tk.Tk):
     def checkqueue(self):
 
         while self.queue.qsize():
-       
+
             try:
                 msg = self.queue.get(0)
+                
+                #move forward each time a file is copied
+                self.progressbar["value"] += msg
+
                 #set the progess and update
                 progress = int((self.progressbar["value"] / float(self.progressbar["maximum"])) * 100)
                 self.listbox.insert('0', (str(progress) + "%  copied..."))
                 
-                #move forward each time a file is copied
-                self.progressbar["value"] += msg
             except Queue.Empty:
                 pass
 
@@ -270,7 +273,7 @@ if not os.path.exists(dest+"lockfile.txt"):
 
 
 #launch regular iMovie
-os.system("open -a "+iMovie+"")
+#os.system("open -a "+iMovie+"")
 
 #exit application
 raise SystemExit

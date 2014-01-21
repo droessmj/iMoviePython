@@ -1,4 +1,4 @@
-import threading, os, shutil, errno
+import threading, os, shutil, errno, Queue
 
 #creates a thread class to copy both file trees and individual files
 class thread(threading.Thread):
@@ -8,6 +8,7 @@ class thread(threading.Thread):
         self.src=src
         self.dest=dest 
 
+        #print self.src
     def run(self):
         try:
             #if the passed source is a tree (iMovie Projects only)
@@ -16,6 +17,7 @@ class thread(threading.Thread):
                 shutil.copytree(self.src, self.dest)
             else:
                 shutil.copy(self.src, self.dest)
+
             #send the message that the progress has moved 1 files worth
             self.queue.put(1)
 
