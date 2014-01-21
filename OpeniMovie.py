@@ -141,6 +141,7 @@ class ProgressBar(tk.Tk):
 
 
     def periodiccall(self):
+
         self.checkqueue()
         if self.thread.is_alive():
             self.after(800, self.periodiccall)
@@ -264,7 +265,7 @@ if not os.path.exists(dest+"lockfile.txt"):
     #copy with the project drive copy.  This is for dealing with an imovie 
     #crash where there is a more recent local copy than remote copy
     fileWriter = open(dest+"lockfile.txt", 'w')
-    fileWriter.write("lock")
+    fileWriter.write("currently locked -- do not tamper with this file")
     fileWriter.close()
 
 
