@@ -4,7 +4,7 @@
 #Phone: 608-778-2457
 
 #import other python files necessary to run application
-import easygui, webbrowser, distutils.core, getpass, os, shutil, errno, threading, Queue, time, ThreadedClient
+import easygui, webbrowser, distutils.core, getpass, os, errno, Queue, time, ThreadedClient
 import Tkinter as tk
 import ttk
 
@@ -35,7 +35,6 @@ class ProgressBar(tk.Tk):
         time.sleep(1)
         #start thread creation
         self.spawnthreads()
-        time.sleep(1)
 
     #method that launches threads
     def spawnthreads(self):
@@ -101,6 +100,7 @@ class ProgressBar(tk.Tk):
                 else:
                     dirToPass = ProjectsDir
                     destDir = self.dest+dirToPass+"/"
+
                     #create the directory if it isn't present
                     if not os.path.isdir(destDir):
                         os.makedirs(destDir)
@@ -108,10 +108,10 @@ class ProgressBar(tk.Tk):
                     self.TotalFileCount += 1
                     #set the maximum value of the progressbar
                     self.progressbar["maximum"] = self.TotalFileCount
+
                     self.thread = ThreadedClient.thread(self.queue, dir, destDir)
                     self.thread.start()
                     self.periodiccall()
-
 
     #creates a method that recursively discovers and adds both 
     #directorys and files to lists. These are then returned and 
@@ -140,6 +140,7 @@ class ProgressBar(tk.Tk):
 
         return d 
 
+
     def periodiccall(self):
         self.checkqueue()
         if self.thread.is_alive():
@@ -155,24 +156,20 @@ class ProgressBar(tk.Tk):
                 #only the if self.progressbar['value'], a tkinter error is thrown as multiple threads attempt to access one 
                 #value at once...this is currently the only method to catch any returns made after the projects thread dies
                 self.after(500, self.periodiccall)
-                
 
     def checkqueue(self):
 
         while self.queue.qsize():
-            
             try:
                 msg = self.queue.get(0)
-
                 #set the progess and update
                 progress = int((self.progressbar["value"] / float(self.progressbar["maximum"])) * 100)
                 self.listbox.insert('0', (str(progress) + "%  copied..."))
-
+                
                 #move forward each time a file is copied
-                self.progressbar["value"] += msg                
+                self.progressbar["value"] += msg
             except Queue.Empty:
                 pass
-
 
 ####################################################################################################################################################################################################
 #start of the main#
@@ -180,107 +177,65 @@ class ProgressBar(tk.Tk):
 #username of logged in user
 username = getpass.getuser()
 
+#have user pick a save location
+easygui.msgbox(msg="Please select a Project Drive folder to save your iMovie Project to...", title="Notice", ok_button="OK")
+
 #get location of movies folder and store as string
-dest = "/Users/" + username + "/Movies/"
+src = "/Users/" + username + "/Movies"
+dest = ""
+while dest is None or len(dest) < 2:
+    dest = easygui.diropenbox(msg="Select a Project Drive folder to save your iMovie Project to")
+#append a forward slash to the string (just leave it, it's needed)
+dest+="/"
 
-#string constant of path to iMovie
-iMovie = "/Applications/iMovie.app"
-
-if not os.path.exists(dest+"lockfile.txt"):
-
-    #query the user as to whether they have a project drive folder
-    hasProjectDrive = easygui.ynbox(msg="Do you already have a folder on the Project Drive to save to?", title="Please confirm", choices=("Yes","No"))
-
-    #if the user does not have a project drive folder direct them to where they can create one
-    if hasProjectDrive == 0:
-        #inform the user that they will have to create a project drive folder
-        easygui.msgbox(msg="Please create a Project Drive folder...")
-        #open default browser to the necessary page
-        webbrowser.open("http://mass.uwec.edu",new="2")
-        #exit application
-        raise SystemExit
-
-    #check if project drive is mapped else map it
-    if not os.path.isdir("/Volumes/project"):
-        #map project drive
-        print ("I need to map the project drive")
-
-    #get location of Project Drive folder to import
-    src = easygui.diropenbox(msg="Select a Project Drive folder to load your iMovie project from...")
+#get all the child directories
+dirs = [name for name in os.listdir(src)
+            if os.path.isdir(os.path.join(src, name))]
 
 
-    #get all the child directories
-    dirs = [name for name in os.listdir(src)
-                if os.path.isdir(os.path.join(src, name))]
+#create a list to hold the iMovie Events and Projects source directories
+iMovieDirs = []
 
-    #if an empty folder is selected, just open iMoive
-    if dirs == []:
-        #add a lock file to the movies directory on the local machine
-        #if this file is present, then an open will not overwrite the local 
-        #copy with the project drive copy.  This is for dealing with an imovie 
-        #crash where there is a more recent local copy than remote copy
-        fileWriter = open(dest+"lockfile.txt", 'w')
-        fileWriter.write("currently locked -- do not tamper with this file")
-        fileWriter.close()
-        #launch regular iMovie
-        os.system("open -a "+iMovie+"")
-        #exit application
-        raise SystemExit
+#create blank strings
+EventsDir = ""
+ProjectsDir = ""
 
-    #create a list to hold the iMovie Events and Projects source directories
-    iMovieDirs = []
+#copy all directories containing iMovie from Movies folder to Project drive
+for dir in dirs:
+    fullPath = src + "/" + dir
+    #if the directory contains "iMovie"
+    if "iMovie Events.localized" == dir:
+        EventsDir = dir
+        iMovieDirs.append(fullPath)
+    elif "iMovie Projects.localized" == dir:
+        ProjectsDir = dir
+        iMovieDirs.append(fullPath)
 
-    #create blank strings
-    EventsDir = ""
-    ProjectsDir = ""
-
-    #copy all directories containing iMovie from Movies folder to Project drive
+#if there wasn't a localized set of folders, look for a general set
+if EventsDir == "" and ProjectsDir == "":
     for dir in dirs:
+        #create the full source path
         fullPath = src + "/" + dir
-        #if the directory contains "iMovie"
-        if "iMovie Projects.localized" == dir:
-            ProjectsDir = dir
-            iMovieDirs.append(fullPath)
-        elif "iMovie Events.localized" == dir:
+        if "iMovie Events" == dir:
             EventsDir = dir
             iMovieDirs.append(fullPath)
+        #if the directory contains "iMovie"
+        elif "iMovie Projects" == dir:
+            ProjectsDir = dir
+            #add the string to the list
+            iMovieDirs.append(fullPath)
 
-    #if there wasn't a localized set of folders, look for a general set
-    if EventsDir == "" and ProjectsDir == "":
-        for dir in dirs:
-            #create the full source path
-            fullPath = src + "/" + dir
-            #if the directory contains "iMovie"
-            if "iMovie Projects" == dir:
-                ProjectsDir = dir
-                #add the string to the list
-                iMovieDirs.append(fullPath)
-            elif "iMovie Events" == dir:
-                EventsDir = dir
-                iMovieDirs.append(fullPath)
+#setup and start the progress bar
+app = ProgressBar(iMovieDirs, dest, ProjectsDir, EventsDir)
+#give the app the priority loop
+app.mainloop()
 
-    #setup and start the progress bar
-    app = ProgressBar(iMovieDirs, dest, ProjectsDir, EventsDir)
-    #give the app the priority loop
-    app.mainloop()
+#remove the lockfile
+if os.path.exists(src+"/lockfile.txt"):
+    os.remove(src+"/lockfile.txt")
 
-    #if the Movies directory doesn't contain "iMovie Events", create the folder as it is needed for iMovie to run
-    eventsExists = os.path.isdir(EventsDir)
-    if eventsExists is False:
-        os.makedirs(EventsDir) 
-
-
-    #add a lock file to the movies directory on the local machine
-    #if this file is present, then an open will not overwrite the local 
-    #copy with the project drive copy.  This is for dealing with an imovie 
-    #crash where there is a more recent local copy than remote copy
-    fileWriter = open(dest+"lockfile.txt", 'w')
-    fileWriter.write("currently locked -- do not tamper with this file")
-    fileWriter.close()
-
-
-#launch regular iMovie
-os.system("open -a "+iMovie+"")
+#inform user upload has completed
+easygui.msgbox(msg="Your iMovie project has finished uploading!", title="Notice", ok_button="OK")
 
 #exit application
-raise SystemExit
+#raise SystemExit
