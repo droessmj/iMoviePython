@@ -1,4 +1,4 @@
-#Created by Michael Droessler in December 2013
+#Created by Michael Droessler in Spring 2014
 #Future support quetions can be sent to ----
 #Email: droessmj@gmail.com
 #Phone: 608-778-2457
@@ -144,15 +144,18 @@ class ProgressBar(tk.Tk):
     def periodiccall(self):
         self.checkqueue()
         if self.thread.is_alive():
-            self.after(800, self.periodiccall)
+            self.after(500, self.periodiccall)
         else:
             #if all the threads have returned the finished value
             if self.progressbar["value"] >= (self.progressbar["maximum"]-1):
                     #close out of progress bar class
+                    self.quit()
                     self.destroy()
             else:
-                #if all the threads have not finished, do nothing
-                pass
+                #I am aware that the placement here is illogical, however if this is removed and a the logic is 
+                #only the if self.progressbar['value'], a tkinter error is thrown as multiple threads attempt to access one 
+                #value at once...this is currently the only method to catch any returns made after the projects thread dies
+                self.after(500, self.periodiccall)
 
     def checkqueue(self):
 

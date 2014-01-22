@@ -20,6 +20,7 @@ class thread(threading.Thread):
 
             #send the message that the progress has moved 1 files worth
             self.queue.put(1)
+            #print self.dest
 
         except OSError as exc:
             #if the directory already exits
@@ -37,5 +38,7 @@ class thread(threading.Thread):
                     shutil.copy(self.src, self.dest)
 
                 self.queue.put(1)
+                #print self.dest
+
             else:
                 raise
