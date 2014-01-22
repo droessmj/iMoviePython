@@ -265,6 +265,8 @@ if not os.path.exists(dest+"lockfile.txt"):
     app.mainloop()
 
     #if the Movies directory doesn't contain "iMovie Events", create the folder as it is needed for iMovie to run
+    if EventsDir == "":
+        EventsDir = dest+"iMovie Events.localized"
     eventsExists = os.path.isdir(EventsDir)
     if eventsExists is False:
         os.makedirs(EventsDir) 
