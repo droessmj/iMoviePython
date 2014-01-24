@@ -192,47 +192,48 @@ dest+="/"
 dirs = [name for name in os.listdir(src)
             if os.path.isdir(os.path.join(src, name))]
 
+if not dirs == []:
+    #create a list to hold the iMovie Events and Projects source directories
+    iMovieDirs = []
 
-#create a list to hold the iMovie Events and Projects source directories
-iMovieDirs = []
+    #create blank strings
+    EventsDir = ""
+    ProjectsDir = ""
 
-#create blank strings
-EventsDir = ""
-ProjectsDir = ""
-
-#copy all directories containing iMovie from Movies folder to Project drive
-for dir in dirs:
-    fullPath = src + "/" + dir
-    #if the directory contains "iMovie"
-    if "iMovie Events.localized" == dir:
-        EventsDir = dir
-        iMovieDirs.append(fullPath)
-    elif "iMovie Projects.localized" == dir:
-        ProjectsDir = dir
-        iMovieDirs.append(fullPath)
-
-#if there wasn't a localized set of folders, look for a general set
-if EventsDir == "" and ProjectsDir == "":
+    #copy all directories containing iMovie from Movies folder to Project drive
     for dir in dirs:
-        #create the full source path
         fullPath = src + "/" + dir
-        if "iMovie Events" == dir:
+        #if the directory contains "iMovie"
+        if "iMovie Events.localized" == dir:
             EventsDir = dir
             iMovieDirs.append(fullPath)
-        #if the directory contains "iMovie"
-        elif "iMovie Projects" == dir:
+        elif "iMovie Projects.localized" == dir:
             ProjectsDir = dir
-            #add the string to the list
             iMovieDirs.append(fullPath)
 
-#setup and start the progress bar
-app = ProgressBar(iMovieDirs, dest, ProjectsDir, EventsDir)
-#give the app the priority loop
-app.mainloop()
+    #if there wasn't a localized set of folders, look for a general set
+    if EventsDir == "" and ProjectsDir == "":
+        for dir in dirs:
+            #create the full source path
+            fullPath = src + "/" + dir
+            if "iMovie Events" == dir:
+                EventsDir = dir
+                iMovieDirs.append(fullPath)
+            #if the directory contains "iMovie"
+            elif "iMovie Projects" == dir:
+                ProjectsDir = dir
+                #add the string to the list
+                iMovieDirs.append(fullPath)
+
+    #setup and start the progress bar
+    app = ProgressBar(iMovieDirs, dest, ProjectsDir, EventsDir)
+    #give the app the priority loop
+    app.mainloop()
 
 #remove the lockfile
-if os.path.exists(src+"/lockfile.txt"):
-    os.remove(src+"/lockfile.txt")
+if os.path.exists(src+"/.lockfile"):
+    os.remove(src+"/.lockfile")
+    print "removed lock"
 
 #inform user upload has completed
 easygui.msgbox(msg="Your iMovie project has finished uploading!", title="Notice", ok_button="OK")

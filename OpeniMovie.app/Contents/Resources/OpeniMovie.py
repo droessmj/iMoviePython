@@ -4,7 +4,7 @@
 #Phone: 608-778-2457
 
 #import other python files necessary to run application
-import easygui, webbrowser, distutils.core, getpass, os, shutil, errno, threading, Queue, time, ThreadedClient
+import easygui, webbrowser, distutils.core, getpass, os, shutil, errno, threading, Queue, time, ThreadedClient, subprocess
 import Tkinter as tk
 import ttk
 
@@ -174,6 +174,7 @@ class ProgressBar(tk.Tk):
                 pass
 
 
+
 ####################################################################################################################################################################################################
 #start of the main#
 
@@ -186,7 +187,7 @@ dest = "/Users/" + username + "/Movies/"
 #string constant of path to iMovie
 iMovie = "/Applications/iMovie.app"
 
-if not os.path.exists(dest+"lockfile.txt"):
+if not os.path.exists(dest+".lockfile"):
 
     #query the user as to whether they have a project drive folder
     hasProjectDrive = easygui.ynbox(msg="Do you already have a folder on the Project Drive to save to?", title="Please confirm", choices=("Yes","No"))
@@ -200,13 +201,14 @@ if not os.path.exists(dest+"lockfile.txt"):
         #exit application
         raise SystemExit
 
+    
     #check if project drive is mapped else map it
     if not os.path.isdir("/Volumes/project"):
         #map project drive
-        print ("I need to map the project drive")
+        print("This feature not yet implemented")
 
     #get location of Project Drive folder to import
-    src = easygui.diropenbox(msg="Select a Project Drive folder to load your iMovie project from...")
+    src = easygui.diropenbox(msg="Select a Project Drive folder to load your iMovie project from...",default="/Volumes/project")
 
 
     #get all the child directories
@@ -219,7 +221,7 @@ if not os.path.exists(dest+"lockfile.txt"):
         #if this file is present, then an open will not overwrite the local 
         #copy with the project drive copy.  This is for dealing with an imovie 
         #crash where there is a more recent local copy than remote copy
-        fileWriter = open(dest+"lockfile.txt", 'w')
+        fileWriter = open(dest+".lockfile", 'w')
         fileWriter.write("currently locked -- do not tamper with this file")
         fileWriter.close()
         #launch regular iMovie
@@ -265,6 +267,8 @@ if not os.path.exists(dest+"lockfile.txt"):
     app.mainloop()
 
     #if the Movies directory doesn't contain "iMovie Events", create the folder as it is needed for iMovie to run
+    if EventsDir == "":
+        EventsDir = dest+"iMovie Events.localized"
     eventsExists = os.path.isdir(EventsDir)
     if eventsExists is False:
         os.makedirs(EventsDir) 
@@ -274,7 +278,7 @@ if not os.path.exists(dest+"lockfile.txt"):
     #if this file is present, then an open will not overwrite the local 
     #copy with the project drive copy.  This is for dealing with an imovie 
     #crash where there is a more recent local copy than remote copy
-    fileWriter = open(dest+"lockfile.txt", 'w')
+    fileWriter = open(dest+".lockfile", 'w')
     fileWriter.write("currently locked -- do not tamper with this file")
     fileWriter.close()
 
