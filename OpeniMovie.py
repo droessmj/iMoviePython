@@ -208,7 +208,7 @@ if not os.path.exists(dest+".lockfile"):
         print("This feature not yet implemented")
 
     #get location of Project Drive folder to import
-    src = easygui.diropenbox(msg="Select a Project Drive folder to load your iMovie project from...",default="/Volumes/project")
+    src = easygui.diropenbox(msg="Select a Project Drive folder to load your iMovie project from...",default="/Volumes/projects")
 
 
     #get all the child directories
@@ -222,7 +222,7 @@ if not os.path.exists(dest+".lockfile"):
         #copy with the project drive copy.  This is for dealing with an imovie 
         #crash where there is a more recent local copy than remote copy
         fileWriter = open(dest+".lockfile", 'w')
-        fileWriter.write("currently locked -- do not tamper with this file")
+        fileWriter.write(src)
         fileWriter.close()
         #launch regular iMovie
         os.system("open -a "+iMovie+"")
@@ -279,7 +279,7 @@ if not os.path.exists(dest+".lockfile"):
     #copy with the project drive copy.  This is for dealing with an imovie 
     #crash where there is a more recent local copy than remote copy
     fileWriter = open(dest+".lockfile", 'w')
-    fileWriter.write("currently locked -- do not tamper with this file")
+    fileWriter.write(src)
     fileWriter.close()
 
 

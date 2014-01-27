@@ -178,15 +178,23 @@ class ProgressBar(tk.Tk):
 username = getpass.getuser()
 
 #have user pick a save location
-easygui.msgbox(msg="Please select a Project Drive folder to save your iMovie Project to...", title="Notice", ok_button="OK")
+#easygui.msgbox(msg="Please select a Project Drive folder to save your iMovie Project to...", title="Notice", ok_button="OK")
 
 #get location of movies folder and store as string
 src = "/Users/" + username + "/Movies"
-dest = ""
+
+if os.path.exists(src+"/.lockfile"):
+    fileReader = open(src+"/.lockfile", 'r')
+    dest = fileReader.readline()
+    dest+="/"
+else:
+    dest = ""
+
+#should no longer occur unless lockfile failed
 while dest is None or len(dest) < 2:
-    dest = easygui.diropenbox(msg="Select a Project Drive folder to save your iMovie Project to")
-#append a forward slash to the string (just leave it, it's needed)
-dest+="/"
+    dest = easygui.diropenbox(msg="Select a Project Drive folder to save your iMovie Project to",default="/Volumes/projects")
+    #append a forward slash to the string (just leave it, it's needed)
+    dest+="/"
 
 #get all the child directories
 dirs = [name for name in os.listdir(src)
@@ -233,7 +241,6 @@ if not dirs == []:
 #remove the lockfile
 if os.path.exists(src+"/.lockfile"):
     os.remove(src+"/.lockfile")
-    print "removed lock"
 
 #inform user upload has completed
 easygui.msgbox(msg="Your iMovie project has finished uploading!", title="Notice", ok_button="OK")
