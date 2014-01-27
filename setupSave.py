@@ -4,7 +4,8 @@ from setuptools import setup
 APP = ['SaveOnExit.py']
 DATA_FILES = []
 OPTIONS = {
-	'iconfile':'iMovie.icns'
+	'iconfile':'APPL.icns',
+	'plist': {'CFBundleShortVersionString':'0.1.0',}
 }
 
 setup(
