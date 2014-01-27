@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>OpeniMovie</string>
 	<key>CFBundleIconFile</key>
-	<string>APPL.icns</string>
+	<string>APPL2.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.pythonmac.unspecified.OpeniMovie</string>
 	<key>CFBundleInfoDictionaryVersion</key>

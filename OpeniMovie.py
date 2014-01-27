@@ -38,8 +38,8 @@ if not os.path.exists(dest+".lockfile"):
         #create projects folder
         os.makedirs("/Volumes/projects")
         #map project drive
-        subprocess.call(["/sbin/mount", "-t", "smbfs", "//"+username+"@mass.uwec.edu/projects", "projects"])
-
+        subprocess.call(["/sbin/mount", "-t", "smbfs", "//"+username+"@mass.uwec.edu/projects", "/Volumes/projects"])
+    
     #get location of Project Drive folder to import
     src = easygui.diropenbox(msg="Select a Project Drive folder to load your iMovie project from...",default="/Volumes/projects")
 

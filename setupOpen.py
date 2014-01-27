@@ -4,7 +4,7 @@ from setuptools import setup
 APP = ['OpeniMovie.py']
 DATA_FILES = []
 OPTIONS = {
-	'iconfile':'APPL.icns',
+	'iconfile':'APPL2.icns',
 	'plist': {'CFBundleShortVersionString':'0.1.0',}
 }
 
