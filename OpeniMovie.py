@@ -33,11 +33,12 @@ if not os.path.exists(dest+".lockfile"):
         #exit application
         raise SystemExit
 
-    
     #check if project drive is mapped else map it
-    if not os.path.isdir("/Volumes/project"):
+    if not os.path.isdir("/Volumes/project") and not os.path.isdir("/Volumes/projects"):
+        #create projects folder
+        os.makedirs("/Volumes/projects")
         #map project drive
-        print("This feature not yet implemented")
+        subprocess.call(["/sbin/mount", "-t", "smbfs", "//"+username+"@mass.uwec.edu/projects", "projects"])
 
     #get location of Project Drive folder to import
     src = easygui.diropenbox(msg="Select a Project Drive folder to load your iMovie project from...",default="/Volumes/projects")
