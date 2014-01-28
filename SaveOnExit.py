@@ -82,4 +82,4 @@ if os.path.exists(src+"/.lockfile"):
 easygui.msgbox(msg="Your iMovie project has finished uploading!", title="Notice", ok_button="OK")
 
 #exit application
-#sys.exit(0)
+os._exit()
