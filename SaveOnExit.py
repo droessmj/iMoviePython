@@ -27,7 +27,7 @@ else:
     dest = ""
 
 #should no longer occur unless lockfile failed
-while dest is None or len(dest) < 2:
+while dest is None or len(dest) < 5:
     dest = easygui.diropenbox(msg="Select a Project Drive folder to save your iMovie Project to",default="/Volumes/projects")
     #append a forward slash to the string (just leave it, it's needed)
     dest+="/"
@@ -82,4 +82,4 @@ if os.path.exists(src+"/.lockfile"):
 easygui.msgbox(msg="Your iMovie project has finished uploading!", title="Notice", ok_button="OK")
 
 #exit application
-#raise SystemExit
+sys.exit(0)
