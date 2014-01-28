@@ -1,5 +1,5 @@
 #Created by Michael Droessler in Spring 2014
-#Future support quetions can be sent to ----
+#Future support questions can be sent to ----
 #Email: droessmj@gmail.com
 #Phone: 608-778-2457
 
@@ -42,7 +42,8 @@ if not os.path.exists(dest+".lockfile"):
     
     #get location of Project Drive folder to import
     src = easygui.diropenbox(msg="Select a Project Drive folder to load your iMovie project from...",default="/Volumes/projects")
-
+    if src == None:
+        raise SystemExit("No source location was selected. Please run the application again and select a source directory.")
 
     #get all the child directories
     dirs = [name for name in os.listdir(src)

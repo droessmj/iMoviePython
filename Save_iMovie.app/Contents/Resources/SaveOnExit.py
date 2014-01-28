@@ -1,5 +1,5 @@
 #Created by Michael Droessler in Spring 2014
-#Future support quetions can be sent to ----
+#Future support questions can be sent to ----
 #Email: droessmj@gmail.com
 #Phone: 608-778-2457
 
@@ -19,6 +19,7 @@ username = getpass.getuser()
 #get location of movies folder and store as string
 src = "/Users/" + username + "/Movies"
 
+dest = ""
 if os.path.exists(src+"/.lockfile"):
     fileReader = open(src+"/.lockfile", 'r')
     dest = fileReader.readline()
@@ -27,10 +28,11 @@ else:
     dest = ""
 
 #should no longer occur unless lockfile failed
-while dest is None or len(dest) < 2:
+while dest is None or len(dest) < 5:
     dest = easygui.diropenbox(msg="Select a Project Drive folder to save your iMovie Project to",default="/Volumes/projects")
     #append a forward slash to the string (just leave it, it's needed)
-    dest+="/"
+    if dest != None:
+        dest+="/"
 
 #get all the child directories
 dirs = [name for name in os.listdir(src)
@@ -82,4 +84,4 @@ if os.path.exists(src+"/.lockfile"):
 easygui.msgbox(msg="Your iMovie project has finished uploading!", title="Notice", ok_button="OK")
 
 #exit application
-#raise SystemExit
+os._exit(1)
