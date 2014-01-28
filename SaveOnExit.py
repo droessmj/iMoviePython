@@ -1,5 +1,5 @@
 #Created by Michael Droessler in Spring 2014
-#Future support quetions can be sent to ----
+#Future support questions can be sent to ----
 #Email: droessmj@gmail.com
 #Phone: 608-778-2457
 
