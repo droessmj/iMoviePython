@@ -5,8 +5,10 @@ import ttk
 #define a class to create a progress bar that creates threads to copy files, then
 #updates the bar on the return of the finished thread
 class ProgressBar(tk.Tk):
+    #takes in two directories, a destination, and the specific name of the projects and events directories
     def __init__(self, iMovieDirs, dest, ProjectsDir, EventsDir):
         tk.Tk.__init__(self)
+
         #define the progress bar gui
         self.wm_title("Please Wait")
         self.queue = Queue.Queue()
@@ -49,12 +51,15 @@ class ProgressBar(tk.Tk):
                     files = []
                     d = []
 
+                    #for all the files and directories in the parent directory
                     for (dirpath, dirnames, filenames) in os.walk(dir):
+                        #for each item in the parent directory
                         for child in os.listdir(dir):
                             if os.path.isdir(os.path.join(dir, child)):
                                 #append is used for individual strings
                                 d.append(child)
                         for file in filenames:
+                            #add each file
                             files.append(os.path.join(dirpath, file))
                         break
 
