@@ -37,7 +37,7 @@ if not os.path.exists(dest+".lockfile"):
     if not os.path.isdir("/Volumes/project") and not os.path.isdir("/Volumes/projects"):
         #create projects folder
         os.makedirs("/Volumes/projects")
-        #map project drive
+        #map project drive making a terminal call
         subprocess.call(["/sbin/mount", "-t", "smbfs", "//"+username+"@mass.uwec.edu/projects", "/Volumes/projects"])
     
     #get location of Project Drive folder to import
@@ -45,11 +45,11 @@ if not os.path.exists(dest+".lockfile"):
     if src == None:
         raise SystemExit("No source location was selected. Please run the application again and select a source directory.")
 
-    #get all the child directories
+    #get all the child directories from source
     dirs = [name for name in os.listdir(src)
                 if os.path.isdir(os.path.join(src, name))]
 
-    #if an empty folder is selected, just open iMoive
+    #if an empty folder is selected, just open iMovie after creating the lockfile with the location
     if dirs == []:
         #add a lock file to the movies directory on the local machine
         #if this file is present, then an open will not overwrite the local 
@@ -70,7 +70,7 @@ if not os.path.exists(dest+".lockfile"):
     EventsDir = ""
     ProjectsDir = ""
 
-    #copy all directories containing iMovie from Movies folder to Project drive
+    #copy all directories containing iMovie from Project Drive to Movies folder
     for dir in dirs:
         fullPath = src + "/" + dir
         #if the directory contains "iMovie"
@@ -103,10 +103,9 @@ if not os.path.exists(dest+".lockfile"):
     #if the Movies directory doesn't contain "iMovie Events", create the folder as it is needed for iMovie to run
     if EventsDir == "":
         EventsDir = dest+"iMovie Events.localized"
-    eventsExists = os.path.isdir(EventsDir)
-    if eventsExists is False:
+    #if there is no Events directory
+    if not os.path.isdir(EventsDir):
         os.makedirs(EventsDir) 
-
 
     #add a lock file to the movies directory on the local machine
     #if this file is present, then an open will not overwrite the local 

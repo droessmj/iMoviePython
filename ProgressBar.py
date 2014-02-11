@@ -25,13 +25,11 @@ class ProgressBar(tk.Tk):
         self.ProjectsDir = ProjectsDir
         self.EventsDir = EventsDir
 
-        #set the maximum value of the progressbar
+        #set the initial maximum value of the progressbar
         self.progressbar["maximum"] = self.TotalFileCount
-        #delay one second
-        time.sleep(1)
+
         #start thread creation
         self.spawnthreads()
-        time.sleep(1)
 
     #method that launches threads
     def spawnthreads(self):
@@ -41,6 +39,10 @@ class ProgressBar(tk.Tk):
             for dir in self.iMovieDirs:
                 #copy events folder as individual files
                 if "Events" in dir:
+
+                    #each file within the events folder will be discoverd, its directory created
+                    #and the individual file copied to its destination
+
                     dirToPass = self.EventsDir
                     #set the destination "/Users/" + username + "/Movies/iMovie Events"
                     destDir = self.dest+dirToPass+"/"
@@ -79,7 +81,6 @@ class ProgressBar(tk.Tk):
             
                             #the destination directory is the full file name with the destination 
                             #replacing the actual source location
-
                             destStartIndex = file.find("iMovie Events.localized/")
                             if destStartIndex is -1:
                                 destStartIndex = file.find("iMovie Events/")
@@ -96,10 +97,15 @@ class ProgressBar(tk.Tk):
                             #make sure the thread is monitored
                             self.periodiccall()
 
-                #copy the projects folder as a tree
+                
                 else:
+                    #copy the projects folder as a tree as passing it as individual files
+                    #resulted in iMovie being unable to read the resulting object
+                    #also, projects folder is generally fairly small
+
                     dirToPass = self.ProjectsDir
                     destDir = self.dest+dirToPass+"/"
+
                     #create the directory if it isn't present
                     if not os.path.isdir(destDir):
                         os.makedirs(destDir)
@@ -109,22 +115,28 @@ class ProgressBar(tk.Tk):
                     self.progressbar["maximum"] = self.TotalFileCount
                     self.thread = ThreadedClient.thread(self.queue, dir, destDir)
                     self.thread.start()
+                    #start monitoring the thread
                     self.periodiccall()
 
 
     #creates a method that recursively discovers and adds both 
     #directorys and files to lists. These are then returned and 
     #acted upon in the SpawnThread method
+
+    #this will also create directories in the destination as they are discovered
     def copydir(self, srcDir, destDir, dir, files):
         #create local copies of passed in variables
         self.files = files
         srcToPass = srcDir + "/" + dir
+
+        #create a local copy of the directories that is recursively extendend
         d = []
 
         #get all sub directories and child files of this directory
         for (dirpath, dirnames, filenames) in os.walk(srcToPass):
             #extend is used to add a list to an array
             d.extend(dirnames)
+            #for each file
             for file in filenames:
                 self.files.append(os.path.join(dirpath, file))
             break
@@ -132,16 +144,22 @@ class ProgressBar(tk.Tk):
         #check each sub-directory for children and recursively call this method again    
         for directory in d:
             destToPass = destDir + "/" + directory
+            #if the directory does not exist in the destination
             if not os.path.isdir(destToPass):
+                #create the directory
                 os.makedirs(destToPass)
             #recursively extend the children
             d.extend(self.copydir(srcToPass, destToPass, directory, self.files))
-
+        #returns the directories list
         return d 
 
+    #method that monitors threads and updates upon completion
     def periodiccall(self):
         self.checkqueue()
+
+        #if the thread is alive
         if self.thread.is_alive():
+            #the thread is still working
             self.after(500, self.periodiccall)
         else:
             #if all the threads have returned the finished value
@@ -150,24 +168,34 @@ class ProgressBar(tk.Tk):
                     self.quit()
                     self.destroy()
             else:
-                #I am aware that the placement here is illogical, however if this is removed and a the logic is 
-                #only the if self.progressbar['value'], a tkinter error is thrown as multiple threads attempt to access one 
-                #value at once...this is currently the only method to catch any returns made after the projects thread dies
+
+                #let this live unless you can determine how to withold the queue even after the self.thread.is_alive() returns negative
+                #as this is only called to capture the last thread that is running
+
+                #there should be an elegant way of doing this, but for now this is a working solution
                 self.after(500, self.periodiccall)
                 
 
+    #method for checking the queue
     def checkqueue(self):
 
         while self.queue.qsize():
             
             try:
+                #msg will be 1 if it can access the queue
                 msg = self.queue.get(0)
 
                 #set the progess and update
                 progress = int((self.progressbar["value"] / float(self.progressbar["maximum"])) * 100)
+                
+                #insert the new progress into the progress box
                 self.listbox.insert('0', (str(progress) + "%  copied..."))
 
                 #move forward each time a file is copied
                 self.progressbar["value"] += msg                
             except Queue.Empty:
                 pass
+
+
+
+
