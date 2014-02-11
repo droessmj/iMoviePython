@@ -4,7 +4,7 @@
 #Phone: 608-778-2457
 
 #import other python files necessary to run application
-import easygui, webbrowser, distutils.core, getpass, os, errno, Queue, time, ThreadedClient
+import easygui, distutils.core, getpass, os, errno, Queue, time, ThreadedClient
 import ProgressBar
 
 ####################################################################################################################################################################################################
@@ -13,32 +13,36 @@ import ProgressBar
 #username of logged in user
 username = getpass.getuser()
 
-#have user pick a save location
-#easygui.msgbox(msg="Please select a Project Drive folder to save your iMovie Project to...", title="Notice", ok_button="OK")
-
 #get location of movies folder and store as string
 src = "/Users/" + username + "/Movies"
 
-dest = ""
-if os.path.exists(src+"/.lockfile"):
-    fileReader = open(src+"/.lockfile", 'r')
-    dest = fileReader.readline()
-    dest+="/"
-else:
-    dest = ""
-
-#should no longer occur unless lockfile failed
-while dest is None or len(dest) < 5:
-    dest = easygui.diropenbox(msg="Select a Project Drive folder to save your iMovie Project to",default="/Volumes/projects")
-    #append a forward slash to the string (just leave it, it's needed)
-    if dest != None:
-        dest+="/"
-
-#get all the child directories
+#get all the child directories of from the source folder
 dirs = [name for name in os.listdir(src)
             if os.path.isdir(os.path.join(src, name))]
 
+#if there are directories in the source folder -- aka user didn't run the save with nothing present
 if not dirs == []:
+
+    #the destination does not need definition until we have determined that there are files
+    #within the source directory
+    dest = ""
+    if os.path.exists(src+"/.lockfile"):
+        fileReader = open(src+"/.lockfile", 'r')
+        #destination will be default be the folder from which they selected to open iMovie
+        dest = fileReader.readline()
+        dest+="/"
+    else:
+        dest = ""
+
+    #user picks save location if for some reason the lockfile is 
+    #removed and/or corrupted
+    while dest is None or len(dest) < 5:
+        dest = easygui.diropenbox(msg="Select a Project Drive folder to save your iMovie Project to",default="/Volumes/projects")
+        #append a forward slash to the string (just leave it, it's needed)
+        if dest != None:
+            dest+="/"
+
+
     #create a list to hold the iMovie Events and Projects source directories
     iMovieDirs = []
 
@@ -56,6 +60,9 @@ if not dirs == []:
         elif "iMovie Projects.localized" == dir:
             ProjectsDir = dir
             iMovieDirs.append(fullPath)
+
+    #when iMovie creates folders itself, it creates .localized folders. However, if a user were to 
+    #manually create the Events folder then they would not have a .localized folder
 
     #if there wasn't a localized set of folders, look for a general set
     if EventsDir == "" and ProjectsDir == "":
@@ -76,7 +83,7 @@ if not dirs == []:
     #give the app the priority loop
     app.mainloop()
 
-#remove the lockfile
+#remove the lockfile from the local directory
 if os.path.exists(src+"/.lockfile"):
     os.remove(src+"/.lockfile")
 
