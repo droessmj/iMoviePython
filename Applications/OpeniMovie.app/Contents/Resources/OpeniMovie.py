@@ -96,15 +96,16 @@ if not os.path.exists(dest+".lockfile"):
                 iMovieDirs.append(fullPath)
 
     #setup and start the progress bar
-    app = ProgressBar.ProgressBar(iMovieDirs, dest, ProjectsDir, EventsDir)
+    app = ProgressBar.ProgressBar(iMovieDirs, src, dest, ProjectsDir, EventsDir)
     #give the app the priority loop
     app.mainloop()
 
-    #if the Movies directory doesn't contain "iMovie Events", create the folder as it is needed for iMovie to run
-    if EventsDir == "":
-        EventsDir = dest+"iMovie Events.localized"
+    #if the Movies directory doesn't contain "iMovie Events" or and "iMovie Events.localized"
+    #create the folder as it is needed for iMovie to run
+    checkforevents1= "iMovie Events.localized"
+    checkforevents2 = "iMovie Events"
     #if there is no Events directory
-    if not os.path.isdir(EventsDir):
+    if not os.path.isdir(dest+checkforevents1) and not os.path.isdir(dest+checkforevents2):
         os.makedirs(EventsDir) 
 
     #add a lock file to the movies directory on the local machine

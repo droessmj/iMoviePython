@@ -79,9 +79,29 @@ if not dirs == []:
                 iMovieDirs.append(fullPath)
 
     #setup and start the progress bar
-    app = ProgressBar.ProgressBar(iMovieDirs, dest, ProjectsDir, EventsDir)
+    app = ProgressBar.ProgressBar(iMovieDirs, src, dest, ProjectsDir, EventsDir)
     #give the app the priority loop
     app.mainloop()
+
+
+
+#compare file counts to determine that everything made it up find before removing lockfile
+#filecount_src = 0
+#for r, d, files in os.walk(src):
+#    for file in files:
+#        #we don't want to have to worry about discrencies in irrelevant dot files
+#        if ".DS_Store" not in file and ".lockfile" not in file and ".matchlist" not in file:
+#            filecount_src += 1
+
+#filecount_dest = 0
+#for r, d, files in os.walk(dest):
+#    for file in files:
+#        #we don't want to have to worry about discrencies in irrelevant dot files
+#        if ".DS_Store" not in file and ".matchlist" not in file:
+#            filecount_dest += 1
+
+#print ("src=" + src + " " + str(filecount_src) + "----" + "dest=" + dest + " " + str(filecount_dest))
+#and filecount_src == filecount_dest
 
 #remove the lockfile from the local directory
 if os.path.exists(src+"/.lockfile"):
