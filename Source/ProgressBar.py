@@ -236,7 +236,8 @@ class ProgressBar(tk.Tk):
             print(len(self.threads))
         
         #if there are still threads alive, go and rescue them
-        if len(self.threads) > 0:
+        if len(self.threads) > 0 and newCall == False:
+            print("newCall avoided")
             self.checkqueue()
             self.after(500, self.periodiccall)
 
