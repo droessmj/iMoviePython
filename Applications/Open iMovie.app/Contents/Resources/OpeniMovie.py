@@ -115,13 +115,8 @@ if not os.path.exists(dest+".lockfile"):
     #create the folder as it is needed for iMovie to run
     checkforevents1= "iMovie Events.localized"
     checkforevents2 = "iMovie Events"
-<<<<<<< HEAD:Source/OpeniMovie.py
-    #if there is no Events directory 
-    if not os.path.isdir(dest+checkforevents1) and not os.path.isdir(dest+checkforevents2) and not EventsDir == "":
-=======
     #if there is no Events directory
-    if not os.path.isdir(dest+checkforevents1) and not os.path.isdir(dest+checkforevents2):
->>>>>>> FETCH_HEAD:Source/OpeniMovie.py
+    if not os.path.isdir(dest+checkforevents1) and not os.path.isdir(dest+checkforevents2) and not EventsDir == "":
         os.makedirs(EventsDir) 
 
     #add a lock file to the movies directory on the local machine

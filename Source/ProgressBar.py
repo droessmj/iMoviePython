@@ -232,6 +232,10 @@ class ProgressBar(tk.Tk):
                     self.listbox.insert('0', "     100%  copied")
                     #close out of progress bar class
                     self.after(500, self.quit())
+<<<<<<< HEAD:Source/ProgressBar.py
+                    
+=======
+>>>>>>> FETCH_HEAD:Source/ProgressBar.py
         
         #if there are still threads alive, go and rescue them
         if len(self.threads) > 0 and newCall == False:
